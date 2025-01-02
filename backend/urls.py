@@ -21,5 +21,6 @@ from users.views import SignupView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/',include('users.urls')),
+    path('adminside/',include('adminside.urls'))
 
 ]
