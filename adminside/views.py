@@ -5,6 +5,11 @@ from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.decorators import login_required
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from django.contrib.auth.models import User 
+from rest_framework import status
+
 
 # Create your views here.
 class AdminLoginView(APIView):
@@ -42,3 +47,12 @@ class AdminDashboardView(APIView):
             'message': 'Welcome to the admin dashboard!',
             'username': request.user.username
         })
+    
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+
+def list_users(request):
+    users = User.objects.all().values('id', 'username', 'email', 'is_staff', 'date_joined')
+    return Response(users, status=status.HTTP_200_OK)

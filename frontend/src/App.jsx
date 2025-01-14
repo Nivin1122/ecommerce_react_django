@@ -8,6 +8,7 @@ import Protected_Route from './components/Auth/Protected_Route';
 import AdminLogin from './components/Auth/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AddProduct from './pages/AddProduct';
+import UserListing from './pages/UserListing';
 
 function App() {
 
@@ -25,6 +26,7 @@ function App() {
           <Route path='/admin/dashboard' element={<AdminDashboard />}/>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path='/admin/add_products/' element={<AddProduct />} />
+          <Route path="/admin/users" element={<UserListing />} />
         </Routes>
       </Router>
     </div>
