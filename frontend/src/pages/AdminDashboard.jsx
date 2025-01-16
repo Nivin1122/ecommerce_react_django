@@ -37,9 +37,15 @@ const AdminDashboard = () => {
         navigate('/admin/login');
     };
 
+
+    const list_users = () => {
+        navigate('/admin/users/')
+    }
+
     return (
         <div className="dashboard-container">
             <h2>{message}</h2>
+            <button onClick={list_users}>list users</button>
             <button onClick={handleLogout}>Logout</button>
         </div>
     );

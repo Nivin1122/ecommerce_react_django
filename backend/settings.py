@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     'rest_framework_simplejwt',
-    "users",
+    'users',
     "adminside",
     'products',
 
@@ -57,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "corsheaders.middleware.CorsMiddleware",
+    'users.middleware.BlockUserMiddleware',
 ]
 
 REST_FRAMEWORK = {
@@ -149,6 +150,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'users.CustomUser'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
