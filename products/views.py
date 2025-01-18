@@ -6,6 +6,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
+from .models import Product
+from rest_framework import status
 
 # Create your views here.
 class AddProductView(APIView):
@@ -21,3 +23,19 @@ class AddProductView(APIView):
             serializer.save()
             return Response({'message': 'Product added successfully'}, status=201)
         return Response(serializer.errors, status=400)
+
+
+
+class ListProductView(APIView):
+
+    permission_classes = []
+    def get(self,request):
+        try:
+            all_products = Product.objects.all()
+            serializer = ProductSerializer(all_products, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )

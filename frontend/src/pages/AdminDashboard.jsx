@@ -42,11 +42,16 @@ const AdminDashboard = () => {
         navigate('/admin/users/')
     }
 
+    const add_product = () => {
+        navigate('/admin/add_products/')
+    }
+
     return (
         <div className="dashboard-container">
             <h2>{message}</h2>
             <button onClick={list_users}>list users</button>
             <button onClick={handleLogout}>Logout</button>
+            <button onClick={add_product}>Add Product</button>
         </div>
     );
 };

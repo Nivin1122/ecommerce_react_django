@@ -1,5 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import Product_listing from './Product_listing';
 
 function Home() {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ function Home() {
       <p><strong>Access Token:</strong> {accesstoken || 'Not available'}</p>
       <p><strong>Refresh Token:</strong> {refreshtoken || 'Not available'}</p>
       <button onClick={handleLogout}>logout</button>
+
+      <Product_listing />
     </div>
   )
 }

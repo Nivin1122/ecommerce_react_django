@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
+
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -36,6 +40,7 @@ const AddProduct = () => {
         },
       });
       setMessage(response.data.message);
+      navigate('/admin/dashboard/')
     } catch (error) {
       setMessage(error.response.data.error || "An error occurred");
     }
