@@ -9,6 +9,7 @@ import AdminLogin from './components/Auth/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AddProduct from './pages/AddProduct';
 import UserListing from './pages/UserListing';
+// import './index.css'
 
 function App() {
 
