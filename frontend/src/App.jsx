@@ -9,7 +9,7 @@ import AdminLogin from './components/Auth/AdminLogin';
 import AdminDashboard from './pages/AdminDashboard';
 import AddProduct from './pages/AddProduct';
 import UserListing from './pages/UserListing';
-import Cartpage from './pages/Cartpage';
+import Cart from './pages/Cart';
 import { ToastContainer } from 'react-toastify';
 // import './index.css'
 
@@ -26,14 +26,14 @@ function App() {
               <Home />
             </Protected_Route>}/>
           <Route path="/login" element={<Login />}/>
-
-          <Route path='/cart_page' element={<Cartpage />}/>
           
           <Route path='/admin/dashboard' element={<AdminDashboard />}/>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path='/admin/add_products/' element={<AddProduct />} />
           
           <Route path="/admin/users" element={<UserListing />} />
+
+          <Route path="/cart" element={<Cart />}/>
           
         </Routes>
       </Router>

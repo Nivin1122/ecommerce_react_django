@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from .models import CartItem
 from products.models import Product
 from .serializers import CartItemSerializer
+from rest_framework.decorators import api_view
+from rest_framework.decorators import action
 
 
 # Create your views here.
@@ -14,6 +16,14 @@ class CartViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return CartItem.objects.filter(user=self.request.user)
+    
+
+    @action(detail=False, methods=['get'])
+    def list_cart_items(self, request):
+        cart_items = self.get_queryset()
+        serializer = CartItemSerializer(cart_items,many=True)
+        return Response(serializer.data)
+
 
     def create(self, request):
         product_id = request.data.get('product_id')
@@ -36,3 +46,6 @@ class CartViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(cart_item)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+
+

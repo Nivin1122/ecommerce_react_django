@@ -27,6 +27,30 @@ export const addToCartAsync = createAsyncThunk(
   }
 );
 
+
+export const getCartItemsAsync = createAsyncThunk(
+  'cart/getCartItems',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.get(
+        'http://localhost:8000/carts/list_carts/', 
+        {
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
@@ -64,7 +88,24 @@ const cartSlice = createSlice({
       .addCase(addToCartAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+
+      .addCase(getCartItemsAsync.pending, (state) => {
+        state.status = 'loading';
+      })
+
+      .addCase(getCartItemsAsync.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.items = action.payload;
+        state.totalQuantity = action.payload.reduce((total, item) => total + item.quantity, 0);
+        state.totalAmount = action.payload.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+      })
+
+      .addCase(getCartItemsAsync.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
+
   }
 });
 
