@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react"
 import { ShoppingCart, CreditCard, Star, Heart } from "lucide-react"
 import { addToCartAsync } from "../Slices/CartSlice"
 import { useDispatch } from 'react-redux';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const API_BASE_URL = "http://localhost:8000"
@@ -18,6 +20,7 @@ const Product_listing = () => {
       .unwrap()
       .then(() => {
         toast.success('Product added to cart!');
+        
       })
       .catch((error) => {
         toast.error('Failed to add product to cart');
