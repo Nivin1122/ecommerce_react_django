@@ -1,12 +1,28 @@
 import axios from "axios"
 import React, { useEffect, useState } from "react"
 import { ShoppingCart, CreditCard, Star, Heart } from "lucide-react"
+import { addToCartAsync } from "../Slices/CartSlice"
+import { useDispatch } from 'react-redux';
+
 
 const API_BASE_URL = "http://localhost:8000"
 
 const Product_listing = () => {
   const [products, setProducts] = useState([])
   const [error, setError] = useState(null)
+  const dispatch = useDispatch();
+
+
+  const handleAddToCart = (product) => {
+    dispatch(addToCartAsync(product))
+      .unwrap()
+      .then(() => {
+        toast.success('Product added to cart!');
+      })
+      .catch((error) => {
+        toast.error('Failed to add product to cart');
+      });
+  }
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -68,7 +84,7 @@ const Product_listing = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-2xl font-bold text-green-400">${product.price}</span>
                   <div className="space-x-2">
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
+                    <button onClick={() => handleAddToCart(product)} className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
                       <ShoppingCart className="w-5 h-5 mr-2" />
                       Add to Cart
                     </button>
