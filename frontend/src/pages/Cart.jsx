@@ -98,7 +98,7 @@ const Cart = () => {
               </div>
               <div className="flex justify-between mb-6">
                 <span className="text-xl">Total Price:</span>
-                <span className="text-xl font-bold">${totalAmount.toFixed(2)}</span>
+                <span className="text-xl font-bold">${totalAmount}</span>
               </div>
               <button
                 onClick={handleCheckout}
