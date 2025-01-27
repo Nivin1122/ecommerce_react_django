@@ -51,6 +51,63 @@ export const getCartItemsAsync = createAsyncThunk(
 
 
 
+// Increment product quantity
+export const incrementQuantityAsync = createAsyncThunk(
+  'cart/incrementQuantity',
+  async (itemId, { rejectWithValue }) => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.patch(
+        `http://localhost:8000/carts/cart/increment/${itemId}/`,
+        {},
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+// Decrement product quantity
+export const decrementQuantityAsync = createAsyncThunk(
+  'cart/decrementQuantity',
+  async (itemId, { rejectWithValue }) => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.patch(
+        `http://localhost:8000/carts/cart/decrement/${itemId}/`,
+        {},
+        { headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+
+// Remove product from cart
+export const removeFromCartAsync = createAsyncThunk(
+  'cart/removeFromCart',
+  async (itemId, { rejectWithValue }) => {
+    try {
+      const accessToken = localStorage.getItem('access_token');
+      const response = await axios.delete(`http://localhost:8000/carts/cart/remove/${itemId}/`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      return { id: itemId };
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState: {
@@ -104,6 +161,35 @@ const cartSlice = createSlice({
       .addCase(getCartItemsAsync.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
+      })
+
+      .addCase(incrementQuantityAsync.fulfilled, (state, action) => {
+        const item = state.items.find((i) => i.id === action.payload.id);
+        if (item) {
+          item.quantity += 1;
+          item.total_price = item.product.price * item.quantity;
+          state.totalQuantity += 1;
+          state.totalAmount += item.product.price;
+        }
+      })
+
+      .addCase(decrementQuantityAsync.fulfilled, (state, action) => {
+        const item = state.items.find((i) => i.id === action.payload.id);
+        if (item && item.quantity > 1) {
+          item.quantity -= 1;
+          item.total_price = item.product.price * item.quantity;
+          state.totalQuantity -= 1;
+          state.totalAmount -= item.product.price;
+        }
+      })
+
+      .addCase(removeFromCartAsync.fulfilled, (state, action) => {
+        state.items = state.items.filter((item) => item.id !== action.payload.id);
+        state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
+        state.totalAmount = state.items.reduce(
+          (total, item) => total + item.product.price * item.quantity,
+          0
+        );
       });
 
   }

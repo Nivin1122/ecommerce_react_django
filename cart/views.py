@@ -7,6 +7,7 @@ from products.models import Product
 from .serializers import CartItemSerializer
 from rest_framework.decorators import api_view
 from rest_framework.decorators import action
+from rest_framework.views import APIView
 
 
 # Create your views here.
@@ -49,3 +50,56 @@ class CartViewSet(viewsets.ModelViewSet):
     
 
 
+class IncrementCartItemQuantity(APIView):
+    """
+    Increment the quantity of a cart item.
+    """
+    def patch(self, request, pk):
+        try:
+            cart_item = CartItem.objects.get(pk=pk)
+            cart_item.quantity += 1
+            cart_item.save()
+
+            serializer = CartItemSerializer(cart_item)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CartItem.DoesNotExist:
+            return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+    
+class DecrementCartItemQuantity(APIView):
+    """
+    Decrement the quantity of a cart item.
+    If the quantity becomes 0, delete the item from the cart.
+    """
+    def patch(self, request, pk):
+        try:
+            cart_item = CartItem.objects.get(pk=pk)
+
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+                cart_item.save()
+
+                serializer = CartItemSerializer(cart_item)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            else:
+                cart_item.delete()
+                return Response({"message": "Cart item deleted as quantity reached 0"}, status=status.HTTP_200_OK)
+
+        except CartItem.DoesNotExist:
+            return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+    
+class RemoveCartItem(APIView):
+    """
+    Remove a cart item completely from the cart.
+    """
+    def delete(self, request, pk):
+        try:
+            cart_item = CartItem.objects.get(pk=pk)
+            cart_item.delete()
+
+            return Response({"message": "Cart item removed successfully"}, status=status.HTTP_200_OK)
+        except CartItem.DoesNotExist:
+            return Response({"error": "Cart item not found"}, status=status.HTTP_404_NOT_FOUND)
