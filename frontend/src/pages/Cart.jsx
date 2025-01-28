@@ -48,7 +48,7 @@ const Cart = () => {
         {items.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-2xl mb-4">Your cart is empty</p>
-            <a href="/" className="text-purple-500 hover:text-purple-400">
+            <a href="/home" className="text-purple-500 hover:text-purple-400">
               Continue Shopping
             </a>
           </div>
@@ -98,7 +98,8 @@ const Cart = () => {
               </div>
               <div className="flex justify-between mb-6">
                 <span className="text-xl">Total Price:</span>
-                <span className="text-xl font-bold">${totalAmount}</span>
+                {/* <span className="text-xl font-bold">${totalAmount}</span> */}
+                <span className="text-xl font-bold">${totalAmount.toFixed(2)}</span>
               </div>
               <button
                 onClick={handleCheckout}

@@ -120,77 +120,79 @@ const cartSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(addToCartAsync.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(addToCartAsync.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        const newItem = action.payload;
-        const existingItem = state.items.find(item => item.id === newItem.id);
-        
-        if (!existingItem) {
-          state.items.push({
-            ...newItem,
-            quantity: newItem.quantity,
-            totalPrice: newItem.product.price * newItem.quantity
-          });
-        } else {
-          existingItem.quantity += newItem.quantity;
-          existingItem.totalPrice += newItem.product.price * newItem.quantity;
-        }
-        
-        state.totalQuantity += newItem.quantity;
-        state.totalAmount += newItem.product.price * newItem.quantity;
-      })
-      .addCase(addToCartAsync.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
+    .addCase(addToCartAsync.pending, (state) => {
+      state.status = 'loading';
+    })
+    .addCase(addToCartAsync.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      const newItem = action.payload;
+      const existingItem = state.items.find(item => item.id === newItem.id);
+      
+      if (!existingItem) {
+        state.items.push({
+          ...newItem,
+          quantity: newItem.quantity,
+          total_price: newItem.product.price * newItem.quantity
+        });
+      } else {
+        existingItem.quantity += newItem.quantity;
+        existingItem.total_price = existingItem.product.price * existingItem.quantity;
+      }
+      
+      // Recalculate totals
+      state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
+      state.totalAmount = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    })
+    .addCase(addToCartAsync.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    })
 
-      .addCase(getCartItemsAsync.pending, (state) => {
-        state.status = 'loading';
-      })
+    .addCase(getCartItemsAsync.pending, (state) => {
+      state.status = 'loading';
+    })
+    .addCase(getCartItemsAsync.fulfilled, (state, action) => {
+      state.status = 'succeeded';
+      state.items = action.payload.map(item => ({
+        ...item,
+        total_price: item.product.price * item.quantity
+      }));
+      state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
+      state.totalAmount = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    })
+    .addCase(getCartItemsAsync.rejected, (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
+    })
 
-      .addCase(getCartItemsAsync.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.items = action.payload;
-        state.totalQuantity = action.payload.reduce((total, item) => total + item.quantity, 0);
-        state.totalAmount = action.payload.reduce((total, item) => total + (item.product.price * item.quantity), 0);
-      })
-
-      .addCase(getCartItemsAsync.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-
-      .addCase(incrementQuantityAsync.fulfilled, (state, action) => {
-        const item = state.items.find((i) => i.id === action.payload.id);
-        if (item) {
-          item.quantity += 1;
-          item.total_price = item.product.price * item.quantity;
-          state.totalQuantity += 1;
-          state.totalAmount += item.product.price;
-        }
-      })
-
-      .addCase(decrementQuantityAsync.fulfilled, (state, action) => {
-        const item = state.items.find((i) => i.id === action.payload.id);
-        if (item && item.quantity > 1) {
-          item.quantity -= 1;
-          item.total_price = item.product.price * item.quantity;
-          state.totalQuantity -= 1;
-          state.totalAmount -= item.product.price;
-        }
-      })
-
-      .addCase(removeFromCartAsync.fulfilled, (state, action) => {
-        state.items = state.items.filter((item) => item.id !== action.payload.id);
+    .addCase(incrementQuantityAsync.fulfilled, (state, action) => {
+      const item = state.items.find((i) => i.id === action.payload.id);
+      if (item) {
+        item.quantity += 1;
+        item.total_price = item.product.price * item.quantity;
+        // Recalculate totals
         state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
-        state.totalAmount = state.items.reduce(
-          (total, item) => total + item.product.price * item.quantity,
-          0
-        );
-      });
+        state.totalAmount = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+      }
+    })
+
+    .addCase(decrementQuantityAsync.fulfilled, (state, action) => {
+      const item = state.items.find((i) => i.id === action.payload.id);
+      if (item && item.quantity > 1) {
+        item.quantity -= 1;
+        item.total_price = item.product.price * item.quantity;
+        // Recalculate totals
+        state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
+        state.totalAmount = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+      }
+    })
+
+    .addCase(removeFromCartAsync.fulfilled, (state, action) => {
+      state.items = state.items.filter((item) => item.id !== action.payload.id);
+      // Recalculate totals after removal
+      state.totalQuantity = state.items.reduce((total, item) => total + item.quantity, 0);
+      state.totalAmount = state.items.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+    });
 
   }
 });
